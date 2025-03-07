@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useHealth } from "../lib/contexts/HealthContext";
-import DatePicker from "./DatePicker";
+//import DatePicker from "./DatePicker"; // Removed DatePicker import
 
 export default function HealthForm() {
   const { addEntry } = useHealth();
@@ -36,7 +36,14 @@ export default function HealthForm() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="mb-6">
-          <DatePicker selectedDate={selectedDate} onChange={setSelectedDate} />
+          <label htmlFor="date" className="block text-lg font-medium mb-2">Date</label>
+          <input 
+            type="date"
+            id="date"
+            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
+            value={selectedDate.toISOString().split('T')[0]}
+            onChange={(e) => setSelectedDate(new Date(e.target.value))}
+          />
         </div>
 
         <div className="mb-5">

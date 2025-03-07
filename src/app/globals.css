@@ -74,27 +74,4 @@ input:focus, textarea:focus {
   border-color: transparent;
 }
 
-.calendar-day {
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  border-radius: 9999px;
-}
-
-.calendar-day:hover:not(.empty) {
-  background: rgba(var(--primary), 0.1);
-}
-
-.calendar-day.selected {
-  background: rgb(var(--primary));
-  color: white;
-}
-
-.calendar-header {
-  color: rgb(var(--primary));
-  font-weight: 600;
-}
+/* Les styles du calendrier ont été supprimés */
