@@ -1,33 +1,100 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --background-rgb: 245, 247, 250;
+  --card-bg: 255, 255, 255;
+  --primary: 37, 99, 235;
+  --secondary: 79, 70, 229;
+  --accent: 16, 185, 129;
+  --border: 229, 231, 235;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+[data-theme="dark"] {
+  --foreground-rgb: 255, 255, 255;
+  --background-rgb: 17, 24, 39;
+  --card-bg: 31, 41, 55;
+  --primary: 96, 165, 250;
+  --secondary: 139, 92, 246;
+  --accent: 52, 211, 153;
+  --border: 55, 65, 81;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: rgb(var(--background-rgb));
+  transition: all 0.3s ease;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+.card {
+  background: rgb(var(--card-bg));
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: rgb(var(--primary));
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  filter: brightness(110%);
+}
+
+.btn-secondary {
+  background-color: rgb(var(--secondary));
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  filter: brightness(110%);
+}
+
+input, textarea {
+  background-color: rgb(var(--card-bg));
+  border: 1px solid rgb(var(--border));
+  color: rgb(var(--foreground-rgb));
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus {
+  outline: 2px solid rgb(var(--primary));
+  border-color: transparent;
+}
+
+.calendar-day {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-radius: 9999px;
+}
+
+.calendar-day:hover:not(.empty) {
+  background: rgba(var(--primary), 0.1);
+}
+
+.calendar-day.selected {
+  background: rgb(var(--primary));
+  color: white;
+}
+
+.calendar-header {
+  color: rgb(var(--primary));
+  font-weight: 600;
 }

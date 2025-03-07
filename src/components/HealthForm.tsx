@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -15,7 +14,7 @@ export default function HealthForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     addEntry({
       date: selectedDate.toISOString(),
       weight: weight ? parseFloat(weight) : undefined,
@@ -23,7 +22,7 @@ export default function HealthForm() {
       ketones: ketones ? parseFloat(ketones) : undefined,
       notes: notes || undefined,
     });
-    
+
     // Ne pas réinitialiser la date à aujourd'hui
     setWeight("");
     setBloodSugar("");
@@ -32,77 +31,73 @@ export default function HealthForm() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold text-blue-800 mb-4">Ajouter une mesure</h2>
-      
+    <div className="bg-white p-6 rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-200">
+      <h2 className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-6">Ajouter une mesure</h2>
+
       <form onSubmit={handleSubmit} className="space-y-4">
-        <DatePicker 
-          selectedDate={selectedDate}
-          onChange={setSelectedDate}
-        />
-        
-        <div>
-          <label htmlFor="weight" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="mb-6">
+          <DatePicker selectedDate={selectedDate} onChange={setSelectedDate} />
+        </div>
+
+        <div className="mb-5">
+          <label htmlFor="weight" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
             Poids (kg)
           </label>
           <input
             type="number"
             id="weight"
-            step="0.1"
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Votre poids en kg"
+            className="w-full p-3 rounded-lg transition-all focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
           />
         </div>
-        
-        <div>
-          <label htmlFor="bloodSugar" className="block text-sm font-medium text-gray-700 mb-1">
+
+        <div className="mb-5">
+          <label htmlFor="bloodSugar" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
             Glycémie (mmol/L)
           </label>
           <input
             type="number"
             id="bloodSugar"
-            step="0.1"
             value={bloodSugar}
             onChange={(e) => setBloodSugar(e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Votre taux de sucre sanguin"
+            className="w-full p-3 rounded-lg transition-all focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
           />
         </div>
-        
-        <div>
-          <label htmlFor="ketones" className="block text-sm font-medium text-gray-700 mb-1">
+
+        <div className="mb-5">
+          <label htmlFor="ketones" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
             Cétones (mmol/L)
           </label>
           <input
             type="number"
             id="ketones"
-            step="0.1"
             value={ketones}
             onChange={(e) => setKetones(e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Votre taux de cétones"
+            className="w-full p-3 rounded-lg transition-all focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
           />
         </div>
-        
-        <div>
-          <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
+
+        <div className="mb-6">
+          <label htmlFor="notes" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
             Notes
           </label>
           <textarea
             id="notes"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Observations, repas, activités, etc."
+            placeholder="Notes supplémentaires"
+            className="w-full p-3 rounded-lg transition-all focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             rows={3}
           />
         </div>
-        
+
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-500 dark:to-indigo-500 text-white font-semibold rounded-lg hover:opacity-90 transition-all duration-300 shadow-md"
         >
           Enregistrer
         </button>

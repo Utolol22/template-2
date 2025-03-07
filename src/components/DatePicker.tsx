@@ -30,28 +30,34 @@ export default function DatePicker({ selectedDate, onDateChange }: DatePickerPro
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md">
-      <div className="flex justify-between items-center mb-4">
+    <div className="card p-5 border border-gray-200 dark:border-gray-700 transition-all">
+      <div className="flex justify-between items-center mb-5">
         <button
           onClick={handlePrevMonth}
-          className="p-2 rounded-full hover:bg-gray-100"
+          className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          aria-label="Mois précédent"
         >
-          &lt;
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+          </svg>
         </button>
-        <h2 className="text-lg font-semibold text-gray-700">
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
           {calendarData.monthName} {calendarData.year}
         </h2>
         <button
           onClick={handleNextMonth}
-          className="p-2 rounded-full hover:bg-gray-100"
+          className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          aria-label="Mois suivant"
         >
-          &gt;
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+          </svg>
         </button>
       </div>
       
-      <div className="grid grid-cols-7 gap-1 mb-2">
+      <div className="grid grid-cols-7 gap-1 mb-3">
         {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((day) => (
-          <div key={day} className="text-center text-sm text-gray-600">
+          <div key={day} className="calendar-header text-center text-sm">
             {day}
           </div>
         ))}
@@ -60,14 +66,12 @@ export default function DatePicker({ selectedDate, onDateChange }: DatePickerPro
       <div className="grid grid-cols-7 gap-1">
         {calendarData.days.map((dayInfo: CalendarDay) => (
           dayInfo.type === 'empty' ? (
-            <div key={dayInfo.id} className="h-8 w-8"></div>
+            <div key={dayInfo.id} className="calendar-day empty"></div>
           ) : (
             <button
               key={dayInfo.id}
               onClick={() => dayInfo.date && handleSelectDate(dayInfo.date)}
-              className={`h-8 w-8 rounded-full flex items-center justify-center hover:bg-blue-100 ${
-                dayInfo.isSelected ? 'bg-blue-500 text-white hover:bg-blue-600' : ''
-              }`}
+              className={`calendar-day ${dayInfo.isSelected ? 'selected' : ''}`}
             >
               {dayInfo.day}
             </button>
