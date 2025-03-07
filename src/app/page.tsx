@@ -14,8 +14,8 @@ export default function Home() {
       <main className="container mx-auto p-4 md:p-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-blue-600 dark:text-blue-400">Suivi Régime Cétogène</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">Suivez vos données de santé pour votre régime cétogène</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-blue-600 dark:text-blue-400 font-['DM_Sans'] tracking-tight">Suivi Régime Cétogène</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2 font-light">Suivez vos données de santé pour votre régime cétogène</p>
           </div>
           <ThemeToggle />
         </div>

@@ -1,11 +1,10 @@
-
 "use client";
 
 import { useHealth } from "../lib/contexts/HealthContext";
 
 export default function HealthStats() {
   const { healthData } = useHealth();
-  
+
   // Si aucune entrée, afficher un message
   if (healthData.entries.length === 0) {
     return null;
@@ -21,7 +20,7 @@ export default function HealthStats() {
     const weights = sortedEntries.filter(e => e.weight !== undefined).map(e => e.weight!);
     const bloodSugars = sortedEntries.filter(e => e.bloodSugar !== undefined).map(e => e.bloodSugar!);
     const ketones = sortedEntries.filter(e => e.ketones !== undefined).map(e => e.ketones!);
-    
+
     // Calcul de tendance: comparer la valeur actuelle avec la moyenne des 3 dernières
     const getWeightTrend = () => {
       if (weights.length < 2) return "stable";
@@ -37,7 +36,7 @@ export default function HealthStats() {
       const latest = bloodSugars[0];
       const prevAvg = bloodSugars.slice(1, 4).reduce((sum, val, _, arr) => sum + val / arr.length, 0);
       const diff = latest - prevAvg;
-      if (Math.abs(diff) < 0.3) return "stable";
+      if (Math.abs(diff) < 0.1) return "stable";
       return diff > 0 ? "up" : "down";
     };
 
@@ -46,166 +45,137 @@ export default function HealthStats() {
       const latest = ketones[0];
       const prevAvg = ketones.slice(1, 4).reduce((sum, val, _, arr) => sum + val / arr.length, 0);
       const diff = latest - prevAvg;
-      if (Math.abs(diff) < 0.2) return "stable";
+      if (Math.abs(diff) < 0.1) return "stable";
       return diff > 0 ? "up" : "down";
     };
-    
+
     return {
       weight: {
         latest: weights.length > 0 ? weights[0] : null,
         min: weights.length > 0 ? Math.min(...weights) : null,
         max: weights.length > 0 ? Math.max(...weights) : null,
-        avg: weights.length > 0 ? Math.round((weights.reduce((a, b) => a + b, 0) / weights.length) * 10) / 10 : null,
-        trend: getWeightTrend()
+        avg: weights.length > 0 ? Math.round(weights.reduce((a, b) => a + b, 0) / weights.length * 10) / 10 : null,
+        trend: getWeightTrend(),
       },
       bloodSugar: {
         latest: bloodSugars.length > 0 ? bloodSugars[0] : null,
         min: bloodSugars.length > 0 ? Math.min(...bloodSugars) : null,
         max: bloodSugars.length > 0 ? Math.max(...bloodSugars) : null,
-        avg: bloodSugars.length > 0 ? Math.round((bloodSugars.reduce((a, b) => a + b, 0) / bloodSugars.length) * 10) / 10 : null,
-        trend: getBloodSugarTrend()
+        avg: bloodSugars.length > 0 ? Math.round(bloodSugars.reduce((a, b) => a + b, 0) / bloodSugars.length * 10) / 10 : null,
+        trend: getBloodSugarTrend(),
       },
       ketones: {
         latest: ketones.length > 0 ? ketones[0] : null,
         min: ketones.length > 0 ? Math.min(...ketones) : null,
         max: ketones.length > 0 ? Math.max(...ketones) : null,
-        avg: ketones.length > 0 ? Math.round((ketones.reduce((a, b) => a + b, 0) / ketones.length) * 10) / 10 : null,
-        trend: getKetonesTrend()
-      }
+        avg: ketones.length > 0 ? Math.round(ketones.reduce((a, b) => a + b, 0) / ketones.length * 10) / 10 : null,
+        trend: getKetonesTrend(),
+      },
     };
   };
 
   const stats = calculateStats();
 
-  // Icônes de tendance
+  // Icônes pour les tendances
   const renderTrendIcon = (trend: string) => {
     if (trend === "up") {
-      return (
-        <span className="inline-block ml-1 text-red-500">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-          </svg>
-        </span>
-      );
+      return <span className="ml-1 text-red-400 dark:text-red-300">↑</span>;
     } else if (trend === "down") {
-      return (
-        <span className="inline-block ml-1 text-green-500">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clipRule="evenodd" />
-          </svg>
-        </span>
-      );
-    } else {
-      return (
-        <span className="inline-block ml-1 text-gray-500">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-          </svg>
-        </span>
-      );
+      return <span className="ml-1 text-green-500 dark:text-green-400">↓</span>;
     }
+    return <span className="ml-1 text-gray-400">→</span>;
+  };
+
+  const StatCard = ({ title, value, unit, trend, min, avg, max, bgColor, textColor }: {
+    title: string;
+    value: number | null;
+    unit: string;
+    trend: string;
+    min: number | null;
+    avg: number | null;
+    max: number | null;
+    bgColor: string;
+    textColor: string;
+  }) => {
+    return (
+      <div className={`${bgColor} backdrop-blur-sm p-5 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl dark:shadow-gray-900/30`}>
+        <div className="flex justify-between items-center mb-3">
+          <h3 className={`text-lg font-semibold ${textColor} font-sans tracking-tight`}>{title}</h3>
+          {value !== null && (
+            <div className="flex items-center">
+              <span className={`text-2xl font-bold ${textColor} font-mono`}>
+                {value}
+              </span>
+              <span className={`ml-1 text-sm ${textColor} font-light`}>{unit}</span>
+              {renderTrendIcon(trend)}
+            </div>
+          )}
+        </div>
+
+        {value !== null ? (
+          <div className="grid grid-cols-3 gap-3 text-center mt-4">
+            <div className="p-2 bg-white/30 dark:bg-gray-800/30 rounded-lg">
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Min</p>
+              <p className="font-semibold text-gray-700 dark:text-gray-300">{min} <span className="text-xs">{unit}</span></p>
+            </div>
+            <div className="p-2 bg-white/30 dark:bg-gray-800/30 rounded-lg">
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Moy</p>
+              <p className="font-semibold text-gray-700 dark:text-gray-300">{avg} <span className="text-xs">{unit}</span></p>
+            </div>
+            <div className="p-2 bg-white/30 dark:bg-gray-800/30 rounded-lg">
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Max</p>
+              <p className="font-semibold text-gray-700 dark:text-gray-300">{max} <span className="text-xs">{unit}</span></p>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-4 rounded-lg bg-white/30 dark:bg-gray-800/30">
+            <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Pas de données</p>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold text-blue-800 mb-4">Statistiques</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Statistiques de poids */}
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-medium text-blue-800">Poids</h3>
-            {stats.weight.latest !== null && (
-              <div className="flex items-center text-xl font-bold text-blue-900">
-                {stats.weight.latest} kg
-                {renderTrendIcon(stats.weight.trend)}
-              </div>
-            )}
-          </div>
-          
-          {stats.weight.latest !== null ? (
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <div>
-                <p className="text-sm text-gray-500">Min</p>
-                <p className="font-semibold">{stats.weight.min} kg</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Moy</p>
-                <p className="font-semibold">{stats.weight.avg} kg</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Max</p>
-                <p className="font-semibold">{stats.weight.max} kg</p>
-              </div>
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500 text-center">Pas de données</p>
-          )}
-        </div>
-        
-        {/* Statistiques de glycémie */}
-        <div className="bg-red-50 p-4 rounded-lg">
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-medium text-red-800">Glycémie</h3>
-            {stats.bloodSugar.latest !== null && (
-              <div className="flex items-center text-xl font-bold text-red-900">
-                {stats.bloodSugar.latest} mmol/L
-                {renderTrendIcon(stats.bloodSugar.trend)}
-              </div>
-            )}
-          </div>
-          
-          {stats.bloodSugar.latest !== null ? (
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <div>
-                <p className="text-sm text-gray-500">Min</p>
-                <p className="font-semibold">{stats.bloodSugar.min} mmol/L</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Moy</p>
-                <p className="font-semibold">{stats.bloodSugar.avg} mmol/L</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Max</p>
-                <p className="font-semibold">{stats.bloodSugar.max} mmol/L</p>
-              </div>
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500 text-center">Pas de données</p>
-          )}
-        </div>
-        
-        {/* Statistiques de cétones */}
-        <div className="bg-green-50 p-4 rounded-lg">
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-medium text-green-800">Cétones</h3>
-            {stats.ketones.latest !== null && (
-              <div className="flex items-center text-xl font-bold text-green-900">
-                {stats.ketones.latest} mmol/L
-                {renderTrendIcon(stats.ketones.trend)}
-              </div>
-            )}
-          </div>
-          
-          {stats.ketones.latest !== null ? (
-            <div className="grid grid-cols-3 gap-2 text-center">
-              <div>
-                <p className="text-sm text-gray-500">Min</p>
-                <p className="font-semibold">{stats.ketones.min} mmol/L</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Moy</p>
-                <p className="font-semibold">{stats.ketones.avg} mmol/L</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Max</p>
-                <p className="font-semibold">{stats.ketones.max} mmol/L</p>
-              </div>
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500 text-center">Pas de données</p>
-          )}
-        </div>
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md transition-all duration-300">
+      <h2 className="text-xl font-bold text-blue-700 dark:text-blue-400 mb-6 font-sans tracking-tight">Statistiques</h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <StatCard 
+          title="Poids" 
+          value={stats.weight.latest} 
+          unit="kg" 
+          trend={stats.weight.trend} 
+          min={stats.weight.min} 
+          avg={stats.weight.avg} 
+          max={stats.weight.max} 
+          bgColor="bg-blue-50/80 dark:bg-blue-900/20" 
+          textColor="text-blue-800 dark:text-blue-300" 
+        />
+
+        <StatCard 
+          title="Glycémie" 
+          value={stats.bloodSugar.latest} 
+          unit="mmol/L" 
+          trend={stats.bloodSugar.trend} 
+          min={stats.bloodSugar.min} 
+          avg={stats.bloodSugar.avg} 
+          max={stats.bloodSugar.max} 
+          bgColor="bg-red-50/80 dark:bg-red-900/20" 
+          textColor="text-red-800 dark:text-red-300" 
+        />
+
+        <StatCard 
+          title="Cétones" 
+          value={stats.ketones.latest} 
+          unit="mmol/L" 
+          trend={stats.ketones.trend} 
+          min={stats.ketones.min} 
+          avg={stats.ketones.avg} 
+          max={stats.ketones.max} 
+          bgColor="bg-green-50/80 dark:bg-green-900/20" 
+          textColor="text-green-800 dark:text-green-300" 
+        />
       </div>
     </div>
   );
