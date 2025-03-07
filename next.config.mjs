@@ -32,6 +32,10 @@ const nextConfig = {
       },
     ];
   },
+  // Configuration pour écouter sur toutes les interfaces réseau (0.0.0.0)
+  server: {
+    host: '0.0.0.0',
+  },
 };
 
 export default nextConfig;

@@ -1,3 +1,4 @@
+
 modules = ["nodejs-20", "web"]
 run = "npm run dev"
 
@@ -25,4 +26,4 @@ author = 40073848
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev"
+args = "npm run dev -- -H 0.0.0.0"
