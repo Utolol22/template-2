@@ -1,106 +1,98 @@
-import React, { useState } from "react";
 
-export function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('fr-FR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+import { format, parseISO, isValid } from 'date-fns';
+import { fr } from 'date-fns/locale';
+
+export const formatDate = (dateString: string): string => {
+  const date = parseISO(dateString);
+  if (!isValid(date)) return 'Date invalide';
+  return format(date, 'dd MMMM yyyy à HH:mm', { locale: fr });
+};
+
+export const formatShortDate = (dateString: string): string => {
+  const date = parseISO(dateString);
+  if (!isValid(date)) return 'Date invalide';
+  return format(date, 'dd/MM/yyyy', { locale: fr });
+};
+
+export interface CalendarDay {
+  id: string;
+  type: 'empty' | 'day';
+  day?: number;
+  date?: Date;
+  isSelected?: boolean;
 }
 
-interface CalendarProps {
-  selectedDate: Date;
-  onSelectDate: (date: Date) => void;
+export interface CalendarData {
+  days: CalendarDay[];
+  monthName: string;
+  year: number;
 }
 
-export function Calendar({ selectedDate, onSelectDate }: CalendarProps) {
-  const [currentMonth, setCurrentMonth] = useState(new Date(selectedDate));
-
-  const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
-  const firstDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay();
-
-  const year = currentMonth.getFullYear();
-  const month = currentMonth.getMonth();
-
-  const prevMonth = () => {
-    setCurrentMonth(new Date(year, month - 1, 1));
-  };
-
-  const nextMonth = () => {
-    setCurrentMonth(new Date(year, month + 1, 1));
-  };
-
-  const renderDays = () => {
-    const days = [];
-    const totalDays = daysInMonth(year, month);
-    const firstDay = firstDayOfMonth(year, month);
-
-    // Ajout des jours vides au début
-    for (let i = 0; i < firstDay; i++) {
-      days.push(<div key={`empty-${i}`} className="h-8 w-8"></div>);
-    }
-
-    // Ajout des jours du mois
-    for (let i = 1; i <= totalDays; i++) {
-      const date = new Date(year, month, i);
-      const isSelected = 
-        date.getDate() === selectedDate.getDate() && 
-        date.getMonth() === selectedDate.getMonth() && 
-        date.getFullYear() === selectedDate.getFullYear();
-
-      days.push(
-        <button
-          key={`day-${i}`}
-          onClick={() => onSelectDate(date)}
-          className={`h-8 w-8 rounded-full flex items-center justify-center hover:bg-blue-100 ${
-            isSelected ? 'bg-blue-500 text-white hover:bg-blue-600' : ''
-          }`}
-        >
-          {i}
-        </button>
-      );
-    }
-
-    return days;
-  };
-
+export const generateCalendarData = (
+  date: Date,
+  selectedDate: Date | null
+): CalendarData => {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  
+  // Premier jour du mois (0 = Dimanche, 1 = Lundi, etc.)
+  const firstDay = new Date(year, month, 1).getDay();
+  // Convertir pour commencer par Lundi (0 = Lundi, 6 = Dimanche)
+  const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1;
+  
+  // Nombre de jours dans le mois
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  
+  const days: CalendarDay[] = [];
+  
+  // Ajout des jours vides au début
+  for (let i = 0; i < adjustedFirstDay; i++) {
+    days.push({ id: `empty-${i}`, type: 'empty' });
+  }
+  
+  // Ajout des jours du mois
+  for (let i = 1; i <= daysInMonth; i++) {
+    const currentDate = new Date(year, month, i);
+    const isSelected = selectedDate ? 
+      selectedDate.getDate() === i && 
+      selectedDate.getMonth() === month && 
+      selectedDate.getFullYear() === year : false;
+      
+    days.push({ 
+      id: `day-${i}`, 
+      type: 'day', 
+      day: i, 
+      date: currentDate,
+      isSelected 
+    });
+  }
+  
   const monthNames = [
     "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
     "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
   ];
+  
+  return {
+    days,
+    monthName: monthNames[month],
+    year
+  };
+};
 
-  return (
-    <div className="calendar w-64">
-      <div className="flex justify-between items-center mb-2">
-        <button onClick={prevMonth} className="p-1 hover:bg-gray-100 rounded">
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <div className="font-semibold">
-          {monthNames[month]} {year}
-        </div>
-        <button onClick={nextMonth} className="p-1 hover:bg-gray-100 rounded">
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
-      <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-500 mb-1">
-        <div>D</div>
-        <div>L</div>
-        <div>M</div>
-        <div>M</div>
-        <div>J</div>
-        <div>V</div>
-        <div>S</div>
-      </div>
-      <div className="grid grid-cols-7 gap-1">
-        {renderDays()}
-      </div>
-    </div>
-  );
-}
+// Fonction pour calculer des statistiques
+export const calculateStats = (data: any[], field: string) => {
+  if (!data || data.length === 0) return { min: 0, max: 0, avg: 0, last: 0 };
+  
+  const validValues = data
+    .filter(item => item[field] !== undefined && item[field] !== null)
+    .map(item => Number(item[field]));
+  
+  if (validValues.length === 0) return { min: 0, max: 0, avg: 0, last: 0 };
+  
+  const min = Math.min(...validValues);
+  const max = Math.max(...validValues);
+  const avg = validValues.reduce((a, b) => a + b, 0) / validValues.length;
+  const last = validValues[validValues.length - 1];
+  
+  return { min, max, avg: parseFloat(avg.toFixed(1)), last };
+};

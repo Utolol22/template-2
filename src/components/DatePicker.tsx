@@ -2,55 +2,78 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar } from "../lib/utils";
+import { CalendarData, CalendarDay, generateCalendarData } from "../lib/utils";
 
 interface DatePickerProps {
-  onChange: (date: Date) => void;
   selectedDate: Date;
+  onDateChange: (date: Date) => void;
 }
 
-export default function DatePicker({ onChange, selectedDate }: DatePickerProps) {
-  const [showCalendar, setShowCalendar] = useState(false);
+export default function DatePicker({ selectedDate, onDateChange }: DatePickerProps) {
+  const [currentDate, setCurrentDate] = useState(new Date(selectedDate));
+  const calendarData = generateCalendarData(currentDate, selectedDate);
 
-  const formatDate = (date: Date): string => {
-    return date.toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
+  const handlePrevMonth = () => {
+    const newDate = new Date(currentDate);
+    newDate.setMonth(newDate.getMonth() - 1);
+    setCurrentDate(newDate);
   };
 
-  const handleDateSelect = (date: Date) => {
-    onChange(date);
-    setShowCalendar(false);
+  const handleNextMonth = () => {
+    const newDate = new Date(currentDate);
+    newDate.setMonth(newDate.getMonth() + 1);
+    setCurrentDate(newDate);
+  };
+
+  const handleSelectDate = (date: Date) => {
+    onDateChange(date);
   };
 
   return (
-    <div className="relative">
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-        <div className="flex">
-          <button
-            type="button"
-            onClick={() => setShowCalendar(!showCalendar)}
-            className="bg-white border border-gray-300 rounded-md py-2 px-3 flex items-center justify-between w-full text-left text-sm"
-          >
-            {formatDate(selectedDate)}
-            <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-          </button>
-        </div>
+    <div className="bg-white p-4 rounded-lg shadow-md">
+      <div className="flex justify-between items-center mb-4">
+        <button
+          onClick={handlePrevMonth}
+          className="p-2 rounded-full hover:bg-gray-100"
+        >
+          &lt;
+        </button>
+        <h2 className="text-lg font-semibold text-gray-700">
+          {calendarData.monthName} {calendarData.year}
+        </h2>
+        <button
+          onClick={handleNextMonth}
+          className="p-2 rounded-full hover:bg-gray-100"
+        >
+          &gt;
+        </button>
       </div>
-
-      {showCalendar && (
-        <div className="absolute z-10 mt-1 bg-white shadow-lg border border-gray-200 rounded-md p-2">
-          <Calendar 
-            selectedDate={selectedDate} 
-            onSelectDate={handleDateSelect} 
-          />
-        </div>
-      )}
+      
+      <div className="grid grid-cols-7 gap-1 mb-2">
+        {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((day) => (
+          <div key={day} className="text-center text-sm text-gray-600">
+            {day}
+          </div>
+        ))}
+      </div>
+      
+      <div className="grid grid-cols-7 gap-1">
+        {calendarData.days.map((dayInfo: CalendarDay) => (
+          dayInfo.type === 'empty' ? (
+            <div key={dayInfo.id} className="h-8 w-8"></div>
+          ) : (
+            <button
+              key={dayInfo.id}
+              onClick={() => dayInfo.date && handleSelectDate(dayInfo.date)}
+              className={`h-8 w-8 rounded-full flex items-center justify-center hover:bg-blue-100 ${
+                dayInfo.isSelected ? 'bg-blue-500 text-white hover:bg-blue-600' : ''
+              }`}
+            >
+              {dayInfo.day}
+            </button>
+          )
+        ))}
+      </div>
     </div>
   );
 }
