@@ -3,6 +3,13 @@
 
 @tailwind base;
 @tailwind components;
+
+/* Ajout d'une classe text-2xs pour un texte encore plus petit que xs */
+.text-2xs {
+  font-size: 0.65rem;
+  line-height: 0.8rem;
+}
+
 @tailwind utilities;
 
 :root {

@@ -98,40 +98,37 @@ export default function HealthStats() {
     textColor: string;
   }) => {
     return (
-      <div className={`${bgColor} backdrop-blur-sm p-5 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl dark:shadow-gray-900/30`}>
+      <div className={`${bgColor} backdrop-blur-sm p-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl dark:shadow-gray-900/30`}>
         <div className="flex justify-between items-center mb-3">
-          <h3 className={`text-lg font-semibold ${textColor} font-sans tracking-tight`}>{title}</h3>
+          <h3 className={`text-base font-semibold ${textColor} font-sans tracking-tight`}>{title}</h3>
           {value !== null && (
             <div className="flex items-center">
               <span className={`text-2xl font-bold ${textColor} font-mono`}>
                 {value}
               </span>
-              <span className={`ml-1 text-sm ${textColor} font-light`}>{unit}</span>
+              <span className={`ml-1 text-xs ${textColor} font-light`}>{unit}</span>
               {renderTrendIcon(trend)}
             </div>
           )}
         </div>
 
-        {value !== null ? (
-          <div className="grid grid-cols-3 gap-3 text-center mt-4">
-            <div className="p-2 bg-white/30 dark:bg-gray-800/30 rounded-lg">
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Min</p>
-              <p className="font-semibold text-gray-700 dark:text-gray-300">{min} <span className="text-xs">{unit}</span></p>
-            </div>
-            <div className="p-2 bg-white/30 dark:bg-gray-800/30 rounded-lg">
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Moy</p>
-              <p className="font-semibold text-gray-700 dark:text-gray-300">{avg} <span className="text-xs">{unit}</span></p>
-            </div>
-            <div className="p-2 bg-white/30 dark:bg-gray-800/30 rounded-lg">
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Max</p>
-              <p className="font-semibold text-gray-700 dark:text-gray-300">{max} <span className="text-xs">{unit}</span></p>
-            </div>
+        <div className="grid grid-cols-3 gap-1 text-center text-xs">
+          <div className="flex flex-col">
+            <div className="font-medium text-gray-500 dark:text-gray-400 mb-1">MIN</div>
+            <div className={`${textColor} font-semibold`}>{min ?? "-"}</div>
+            <div className="text-gray-500 dark:text-gray-400 text-2xs">{unit}</div>
           </div>
-        ) : (
-          <div className="text-center py-4 rounded-lg bg-white/30 dark:bg-gray-800/30">
-            <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Pas de données</p>
+          <div className="flex flex-col">
+            <div className="font-medium text-gray-500 dark:text-gray-400 mb-1">MOY</div>
+            <div className={`${textColor} font-semibold`}>{avg ?? "-"}</div>
+            <div className="text-gray-500 dark:text-gray-400 text-2xs">{unit}</div>
           </div>
-        )}
+          <div className="flex flex-col">
+            <div className="font-medium text-gray-500 dark:text-gray-400 mb-1">MAX</div>
+            <div className={`${textColor} font-semibold`}>{max ?? "-"}</div>
+            <div className="text-gray-500 dark:text-gray-400 text-2xs">{unit}</div>
+          </div>
+        </div>
       </div>
     );
   };
