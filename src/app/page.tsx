@@ -2,6 +2,7 @@ import { HealthProvider } from "../lib/contexts/HealthContext";
 import HealthForm from "../components/HealthForm";
 import EntriesList from "../components/EntriesList";
 import HealthStats from "../components/HealthStats";
+import HealthCharts from "../components/HealthCharts";
 
 export default function Home() {
   return (
@@ -16,8 +17,11 @@ export default function Home() {
 
         <HealthProvider>
           <div className="space-y-8">
-            <HealthForm />
-            <HealthStats />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <HealthForm />
+              <HealthStats />
+            </div>
+            <HealthCharts />
             <EntriesList />
           </div>
         </HealthProvider>
