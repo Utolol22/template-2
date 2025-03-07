@@ -88,28 +88,74 @@ export default function HealthCharts() {
   // Si pas assez de données, afficher un message
   if (healthData.entries.length < 2) {
     return (
-      <div className="bg-white p-6 rounded-lg shadow-md text-center">
-        <p className="text-gray-500">
+      <div className="bg-white p-6 rounded-lg shadow-md text-center dark:bg-gray-800 dark:text-gray-200">
+        <p className="text-gray-500 dark:text-gray-400">
           Ajoutez au moins deux entrées pour voir des graphiques de tendance.
         </p>
       </div>
     );
   }
 
-  const chartOptions = {
+  // Définir les options de graphique avec des échelles adaptées
+  const getChartOptions = (dataPoints: number[]) => {
+    if (dataPoints.length === 0) return defaultChartOptions;
+    
+    // Calculer les valeurs min et max avec une marge
+    const min = Math.min(...dataPoints);
+    const max = Math.max(...dataPoints);
+    const range = max - min;
+    
+    // Ajouter une marge de 10% en haut et en bas
+    const padding = range * 0.1;
+    const minValue = Math.max(0, min - padding); // Ne pas descendre sous 0 pour certaines mesures
+    const maxValue = max + padding;
+    
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context: any) {
+              const value = context.raw;
+              return `${value}`;
+            },
+          },
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: false,
+          min: minValue,
+          max: maxValue,
+          ticks: {
+            color: "rgba(100, 116, 139, 0.8)",
+          },
+          grid: {
+            color: "rgba(226, 232, 240, 0.5)",
+          },
+        },
+        x: {
+          ticks: {
+            color: "rgba(100, 116, 139, 0.8)",
+          },
+          grid: {
+            color: "rgba(226, 232, 240, 0.5)",
+          },
+        },
+      },
+    };
+  };
+
+  const defaultChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
         display: false,
-      },
-      tooltip: {
-        callbacks: {
-          label: function (context: any) {
-            const value = context.raw;
-            return `${value}`;
-          },
-        },
       },
     },
     scales: {
@@ -120,15 +166,15 @@ export default function HealthCharts() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold text-blue-800 mb-6">
+    <div className="bg-white p-6 rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-200">
+      <h2 className="text-xl font-semibold text-blue-800 mb-6 dark:text-blue-400">
         Tendances de santé
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-8">
         {chartData.weight.data.length > 0 && (
-          <div className="h-64">
-            <h3 className="text-lg font-medium text-gray-700 mb-2">
+          <div className="h-72 bg-slate-50 p-4 rounded-lg dark:bg-gray-900">
+            <h3 className="text-lg font-medium text-gray-700 mb-2 dark:text-gray-300">
               Évolution du poids (kg)
             </h3>
             <Line
@@ -140,17 +186,19 @@ export default function HealthCharts() {
                     borderColor: "rgba(59, 130, 246, 0.8)",
                     backgroundColor: "rgba(59, 130, 246, 0.1)",
                     tension: 0.3,
+                    pointBackgroundColor: "rgba(59, 130, 246, 1)",
+                    pointRadius: 4,
                   },
                 ],
               }}
-              options={chartOptions}
+              options={getChartOptions(chartData.weight.data)}
             />
           </div>
         )}
 
         {chartData.bloodSugar.data.length > 0 && (
-          <div className="h-64">
-            <h3 className="text-lg font-medium text-gray-700 mb-2">
+          <div className="h-72 bg-slate-50 p-4 rounded-lg dark:bg-gray-900">
+            <h3 className="text-lg font-medium text-gray-700 mb-2 dark:text-gray-300">
               Évolution de la glycémie (mmol/L)
             </h3>
             <Line
@@ -162,17 +210,19 @@ export default function HealthCharts() {
                     borderColor: "rgba(220, 38, 38, 0.8)",
                     backgroundColor: "rgba(220, 38, 38, 0.1)",
                     tension: 0.3,
+                    pointBackgroundColor: "rgba(220, 38, 38, 1)",
+                    pointRadius: 4,
                   },
                 ],
               }}
-              options={chartOptions}
+              options={getChartOptions(chartData.bloodSugar.data)}
             />
           </div>
         )}
 
         {chartData.ketones.data.length > 0 && (
-          <div className="h-64">
-            <h3 className="text-lg font-medium text-gray-700 mb-2">
+          <div className="h-72 bg-slate-50 p-4 rounded-lg dark:bg-gray-900">
+            <h3 className="text-lg font-medium text-gray-700 mb-2 dark:text-gray-300">
               Évolution des cétones (mmol/L)
             </h3>
             <Line
@@ -184,10 +234,12 @@ export default function HealthCharts() {
                     borderColor: "rgba(16, 185, 129, 0.8)",
                     backgroundColor: "rgba(16, 185, 129, 0.1)",
                     tension: 0.3,
+                    pointBackgroundColor: "rgba(16, 185, 129, 1)",
+                    pointRadius: 4,
                   },
                 ],
               }}
-              options={chartOptions}
+              options={getChartOptions(chartData.ketones.data)}
             />
           </div>
         )}
